@@ -1,0 +1,9 @@
+# fetched by tools/fetch_sources.sh
+dl/
+node_modules/
+# build and tool output
+dist/
+out/
+__pycache__/
+*.pyc
+.DS_Store

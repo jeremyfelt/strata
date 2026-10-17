@@ -1,0 +1,13 @@
+{
+  "name": "strata",
+  "private": true,
+  "description": "Word puzzles in layers. Build tools for the puzzles and dictionary.",
+  "scripts": {
+    "build": "python3 tools/build.py",
+    "test": "node tools/test_logic.js && python3 tools/test_ui.py"
+  },
+  "devDependencies": {
+    "naughty-words": "1.2.0",
+    "wordlist-english": "1.2.1"
+  }
+}

@@ -1,0 +1,1100 @@
+<title>Strata</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Strata">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ecefe9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161c20" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="%%ICON_HREF%%">
+<link rel="icon" type="image/png" href="%%ICON_HREF%%">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap">
+<style>
+:root {
+  /* Layout: a one-screen dig site. Left-aligned header, the tile stack centered on a limestone
+     table, and a tile rack over three keycap controls at the bottom. Color lives in the tiles:
+     every layer stands on its own colored sole, so a stack reads as strata. All else stays quiet. */
+  --stone: #ecefe9;        /* the table */
+  --stone-deep: #e0e4dd;   /* the rack */
+  --bone: #fbfaf5;         /* tile faces */
+  --bone-shade: #e5e1d5;   /* thin band under each face */
+  --slate: #27333c;        /* ink, selected tiles */
+  --slate-soft: #56636d;
+  --slate-faint: #8b969d;
+  --line: #cdd4cb;
+  --locked: #e4e8e2;
+  --buried: #dce1d9;
+  --stipple: rgba(39, 51, 60, .2);
+  --grid: rgba(39, 51, 60, .075);
+  --key-sole: #c3cac1;
+  --primary-sole: #11181d;
+  --rack-lip: #cbd2c8;
+  --s0: #6a8395;           /* layer 0 sole: slate */
+  --s1: #8cab86;           /* layer 1: sage */
+  --s2: #d3a14a;           /* layer 2: ochre */
+  --s3: #9a8bb7;           /* layer 3: heather */
+  --lv0: #d3a14a; --lv1: #8cab86; --lv2: #6a8395; --lv3: #6c5a8b;   /* easy to expert: shallow to deep */
+  --found: #1d8a62;        /* theme words */
+  --scrim: rgba(22, 28, 32, .42);
+  --font: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --stone: #161c20; --stone-deep: #1f262b; --bone: #303a42; --bone-shade: #20282e; --slate: #eef1ec;
+    --slate-soft: #a9b3b9; --slate-faint: #707c84; --line: #3a454d; --locked: #20272c; --buried: #1a2025;
+    --stipple: rgba(238, 241, 236, .1); --grid: rgba(238, 241, 236, .05); --key-sole: #0d1114; --primary-sole: #8f9aa1;
+    --rack-lip: #10151a; --s0: #4d687b; --s1: #5f7d5a; --s2: #a87d36; --s3: #716592;
+    --lv0: #c39543; --lv1: #7e9c78; --lv2: #6d879a; --lv3: #8a77ab; --found: #52c493; --scrim: rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --stone: #161c20; --stone-deep: #1f262b; --bone: #303a42; --bone-shade: #20282e; --slate: #eef1ec;
+  --slate-soft: #a9b3b9; --slate-faint: #707c84; --line: #3a454d; --locked: #20272c; --buried: #1a2025;
+  --stipple: rgba(238, 241, 236, .1); --grid: rgba(238, 241, 236, .05); --key-sole: #0d1114; --primary-sole: #8f9aa1;
+  --rack-lip: #10151a; --s0: #4d687b; --s1: #5f7d5a; --s2: #a87d36; --s3: #716592;
+  --lv0: #c39543; --lv1: #7e9c78; --lv2: #6d879a; --lv3: #8a77ab; --found: #52c493; --scrim: rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+
+html { height: 100%; box-sizing: border-box; -webkit-text-size-adjust: 100%; }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  height: 100%; margin: 0; overflow: hidden;
+  background: var(--stone); color: var(--slate);
+  font: 400 15px/1.45 var(--font);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; touch-action: manipulation; }
+button:focus-visible { outline: 2px solid var(--slate); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+#app { height: 100%; max-width: 560px; margin: 0 auto; }
+.screen { height: 100%; }
+.icon-btn { width: 40px; height: 40px; display: grid; place-items: center; flex: none; border-radius: 12px; color: var(--slate); }
+.icon-btn:active { background: var(--stone-deep); }
+.icon-btn svg { width: 22px; height: 22px; }
+
+/* keycaps: the same build as the tiles, so every control feels like a piece of the set */
+.key {
+  height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--bone); color: var(--slate); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 3px 0 0 var(--key-sole); font: 600 15px/1 var(--font); font-stretch: 105%;
+  transition: transform .08s ease, box-shadow .08s ease, background-color .15s ease, color .15s ease, opacity .15s ease;
+}
+.key svg { width: 18px; height: 18px; }
+.key:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 0 var(--key-sole); }
+.key:disabled { opacity: .4; cursor: default; }
+.key.dark, .key.primary.ready { background: var(--slate); color: var(--bone); border-color: var(--slate); box-shadow: 0 3px 0 0 var(--primary-sole); }
+.key.dark:active, .key.primary.ready:active { box-shadow: 0 1px 0 0 var(--primary-sole); }
+.key.small { height: 40px; padding: 0 16px; font-size: 14px; border-radius: 10px; }
+
+/* ---------- home ---------- */
+.home { overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.home-inner { padding-block: 22px 44px; display: flex; flex-direction: column; gap: 20px; }
+.masthead { display: flex; align-items: center; gap: 14px; }
+.mark { display: grid; gap: 3px; width: 30px; flex: none; }
+.mark i { display: block; height: 6px; border-radius: 3px; }
+.mark i:nth-child(1) { background: var(--s2); width: 70%; margin-left: 30%; }
+.mark i:nth-child(2) { background: var(--s1); width: 88%; margin-left: 4%; }
+.mark i:nth-child(3) { background: var(--s0); width: 100%; }
+.mark i:nth-child(4) { background: var(--lv3); width: 80%; margin-left: 12%; }
+.masthead h1 { font: 800 38px/1 var(--font); font-stretch: 125%; letter-spacing: -.02em; }
+.dek { font-size: 17px; line-height: 1.45; color: var(--slate-soft); max-width: 30em; text-wrap: pretty; }
+.core { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--slate-soft); font-variant-numeric: tabular-nums; }
+.core-cells { display: flex; gap: 4px; }
+.core-cells b { width: 14px; height: 16px; border-radius: 3px; background: var(--locked); border: 1px solid var(--line); }
+.core-cells b.on { background: var(--c); border-color: transparent; }
+#list { display: flex; flex-direction: column; gap: 30px; }
+.group { display: flex; flex-direction: column; gap: 4px; }
+.group-head { display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 10px; padding-bottom: 6px; }
+.group-head .band { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--lv); margin-bottom: 12px; }
+.group-head h2 { font: 700 17px/1.2 var(--font); font-stretch: 112%; }
+.group-head p { font-size: 13px; color: var(--slate-soft); }
+.group ul { list-style: none; margin: 0; padding: 0; }
+.pz { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 10px 2px; text-align: left; border-radius: 12px; }
+.pz:active { background: var(--stone-deep); }
+.chip {
+  width: 34px; height: 36px; display: grid; place-items: center; border-radius: 7px;
+  background: var(--bone); border: 1px solid var(--line); box-shadow: 0 1.5px 0 0 var(--bone-shade), 0 4px 0 0 var(--lv);
+  font: 700 15px/1 var(--font); font-stretch: 110%; font-variant-numeric: tabular-nums; margin-bottom: 3px;
+}
+.pz.solved .chip { background: var(--found); border-color: var(--found); color: var(--bone); }
+.pz-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pz-title { font: 700 18px/1.2 var(--font); }
+.pz-sub { font-size: 13px; color: var(--slate-soft); font-variant-numeric: tabular-nums; }
+.pz-end { color: var(--slate-faint); display: grid; place-items: center; }
+.pz-end svg { width: 18px; height: 18px; }
+.pz.solved .pz-end { color: var(--found); }
+.pz.solved .pz-end svg { width: 22px; height: 22px; }
+.colophon { font-size: 13px; color: var(--slate-faint); max-width: 32em; }
+
+/* ---------- game ---------- */
+.game { display: flex; flex-direction: column; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.bar { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; padding-block: 8px 4px; }
+.back { margin-left: -8px; }
+.title-block { min-width: 0; }
+.title-block h2 { font: 700 19px/1.15 var(--font); font-stretch: 108%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.g-sub { display: flex; align-items: center; gap: 7px; margin-top: 3px; font-size: 13px; color: var(--slate-soft); }
+.swatch { width: 16px; height: 5px; border-radius: 3px; background: var(--lv); flex: none; }
+.bar-right { display: flex; align-items: center; gap: 2px; }
+.timer { height: 40px; padding: 0 8px; display: inline-flex; align-items: center; gap: 6px; border-radius: 12px; font: 600 15px/1 var(--font); font-variant-numeric: tabular-nums; }
+.timer svg { width: 13px; height: 13px; color: var(--slate-faint); }
+.timer:active { background: var(--stone-deep); }
+.meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px 0; font-size: 13px; color: var(--slate-soft); font-variant-numeric: tabular-nums; }
+.theme-track { display: flex; align-items: center; gap: 8px; }
+.theme-cells { display: inline-flex; gap: 4px; }
+.theme-cells b { width: 12px; height: 13px; border-radius: 3px; background: var(--locked); border: 1px solid var(--line); transition: background-color .25s ease, border-color .25s ease; }
+.theme-cells b.on { background: var(--found); border-color: var(--found); }
+.theme-cells b.pop { animation: pop .38s ease; }
+.count b { color: var(--slate); font-weight: 700; }
+.board-wrap {
+  position: relative; isolation: isolate; flex: 1; min-height: 0; display: grid; place-items: center; padding-block: 14px;
+  background-image: radial-gradient(circle, var(--grid) 1px, transparent 1.6px); background-size: 18px 18px; background-position: center;
+}
+.board { position: relative; }
+.paused { position: absolute; inset: 0; z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--stone); text-align: center; }
+.paused h3 { font: 700 24px/1.1 var(--font); font-stretch: 112%; }
+.paused p { color: var(--slate-soft); font-size: 14px; }
+
+/* tiles */
+.tile {
+  --sole: var(--s0);
+  position: absolute; left: 0; top: 0; width: var(--tw); height: var(--th);
+  display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: calc(var(--tw) * .14);
+  background: var(--bone); color: var(--slate);
+  box-shadow: 0 1.5px 0 0 var(--bone-shade), 0 var(--edge) 0 0 var(--sole);
+  font: 750 calc(var(--tw) * .5)/1 var(--font); font-stretch: 115%; text-transform: uppercase;
+  transition: background-color .15s ease, border-color .15s ease, color .2s ease, transform .14s ease, box-shadow .14s ease;
+}
+.tile.z1 { --sole: var(--s1); }
+.tile.z2 { --sole: var(--s2); }
+.tile.z3 { --sole: var(--s3); }
+.tile .ch { display: block; transform: translateY(.03em); }
+.tile.locked { background: var(--locked); color: var(--slate-faint); cursor: default; box-shadow: 0 1.5px 0 0 var(--bone-shade), 0 var(--edge) 0 0 color-mix(in srgb, var(--sole) 55%, var(--stone)); }
+.tile.hidden {
+  background-color: var(--buried); cursor: default;
+  background-image: radial-gradient(circle, var(--stipple) .9px, transparent 1.2px); background-size: 6px 6px;
+  box-shadow: 0 1.5px 0 0 var(--bone-shade), 0 var(--edge) 0 0 color-mix(in srgb, var(--sole) 55%, var(--stone));
+}
+.tile.hidden .ch { opacity: 0; }
+.tile.free:active { transform: translateY(1px); }
+.tile.sel { background: var(--slate); border-color: var(--slate); color: var(--bone); transform: translateY(-3px); box-shadow: 0 1.5px 0 0 var(--slate), 0 calc(var(--edge) + 3px) 0 0 var(--sole); }
+.tile.gone { visibility: hidden; pointer-events: none; }
+.tile.leaving { animation: tile-out .26s cubic-bezier(.45, 0, .65, 1) forwards; pointer-events: none; }
+.tile.returning { animation: tile-in .3s cubic-bezier(.2, .7, .3, 1) both; }
+.tile.revealed .ch { animation: ch-in .38s cubic-bezier(.2, .7, .3, 1) both; }
+.tile.nudge { animation: nudge .28s ease; }
+.board.dim .tile:not(.gone) { opacity: .5; transition: opacity .3s ease; }
+@keyframes tile-out { 0% { transform: translateY(-3px); opacity: 1; } 100% { transform: translateY(-18px) scale(.9); opacity: 0; } }
+@keyframes tile-in { from { transform: translateY(-12px) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes ch-in { from { opacity: 0; transform: scale(.55); } to { opacity: 1; transform: translateY(.03em); } }
+@keyframes nudge { 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+@keyframes pop { 50% { transform: scale(1.35); } }
+
+/* dock: played words, rack, controls */
+.dock { position: relative; display: flex; flex-direction: column; gap: 8px; padding-block: 4px 12px; }
+.played { display: flex; gap: 14px; align-items: center; min-height: 26px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; font: 700 13px/1 var(--font); font-stretch: 112%; letter-spacing: .04em; text-transform: uppercase; color: var(--slate-soft); }
+.played::-webkit-scrollbar { display: none; }
+.played .hint { text-transform: none; letter-spacing: 0; font-weight: 400; font-stretch: 100%; color: var(--slate-faint); }
+.played .w { flex: none; padding-bottom: 3px; border-bottom: 2px solid transparent; }
+.played .w.theme { color: var(--found); border-bottom-color: var(--found); }
+.played .w.new { animation: fade-up .3s ease both; }
+.tray { display: flex; align-items: center; justify-content: center; min-height: 64px; padding: 8px 10px 10px; background: var(--stone-deep); border-radius: 14px; box-shadow: inset 0 2px 3px rgba(22, 28, 32, .06), 0 3px 0 0 var(--rack-lip); }
+.tray-hint { font-size: 15px; color: var(--slate-soft); }
+.cells { display: flex; flex-wrap: nowrap; justify-content: center; gap: 4px; max-width: 100%; }
+.cell {
+  width: var(--cw, 32px); height: calc(var(--cw, 32px) * 1.12); display: grid; place-items: center; flex: none;
+  background: var(--bone); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 1px 0 0 var(--bone-shade), 0 3px 0 0 var(--key-sole);
+  font: 750 calc(var(--cw, 32px) * .56)/1 var(--font); font-stretch: 115%; text-transform: uppercase; color: var(--slate); animation: cell-in .12s ease-out;
+}
+.tray.shake .cells { animation: shake .42s ease; }
+@keyframes cell-in { from { transform: translateY(-4px); opacity: .3; } }
+@keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(3px); } 30%, 50%, 70% { transform: translateX(-5px); } 40%, 60% { transform: translateX(5px); } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(4px); } }
+.dead { display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; }
+.dead strong { font-size: 15px; font-weight: 650; }
+.dead span { font-size: 13px; color: var(--slate-soft); }
+.dead button { font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+.controls { display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 10px; padding-top: 6px; }
+.toast {
+  position: absolute; z-index: 30; left: 50%; bottom: calc(100% + 10px); translate: -50% 0;
+  padding: 10px 14px; border-radius: 10px; background: var(--slate); color: var(--bone);
+  font: 600 14px/1.2 var(--font); white-space: nowrap; pointer-events: none;
+  opacity: 0; transform: translateY(6px); transition: opacity .18s ease, transform .18s ease;
+}
+.toast.on { opacity: 1; transform: none; }
+
+/* sheets */
+.scrim { position: fixed; inset: 0; z-index: 50; background: var(--scrim); animation: fade .2s ease; }
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 51; width: 100%; max-width: 520px; margin: 0 auto; max-height: 90%;
+  overflow-y: auto; overscroll-behavior: contain; background: var(--stone); border-radius: 20px 20px 0 0;
+  padding: 22px max(22px, env(safe-area-inset-right, 0px)) calc(22px + env(safe-area-inset-bottom, 0px)) max(22px, env(safe-area-inset-left, 0px));
+  box-shadow: 0 -10px 40px rgba(16, 22, 26, .2); animation: sheet-in .28s cubic-bezier(.2, .8, .2, 1);
+  display: flex; flex-direction: column; gap: 16px;
+}
+@media (min-width: 700px) and (min-height: 560px) {
+  .sheet { top: 50%; bottom: auto; translate: 0 -50%; border-radius: 18px; box-shadow: 0 20px 60px rgba(16, 22, 26, .25); }
+}
+@keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } }
+@keyframes fade { from { opacity: 0; } }
+.sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sheet-head h2 { font: 750 25px/1.12 var(--font); font-stretch: 112%; letter-spacing: -.01em; text-wrap: balance; padding-top: 4px; }
+.sheet p { color: var(--slate-soft); text-wrap: pretty; }
+.sheet .close { margin: 0 -10px 0 0; }
+.actions { display: flex; flex-direction: column; gap: 12px; padding-top: 2px; }
+.actions .key { width: 100%; }
+.link-btn { align-self: center; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; color: var(--slate-soft); padding: 8px; }
+
+.menu { display: flex; flex-direction: column; gap: 8px; }
+.menu button { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; padding: 13px 14px; text-align: left; background: var(--bone); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 2px 0 0 var(--key-sole); }
+.menu button:active { transform: translateY(1px); box-shadow: 0 1px 0 0 var(--key-sole); }
+.menu svg { width: 22px; height: 22px; margin-top: 1px; }
+.menu b { display: block; font-size: 16px; font-weight: 650; line-height: 1.3; }
+.menu small { display: block; font-size: 13px; color: var(--slate-soft); margin-top: 2px; }
+
+.verdict { font-size: 17px; color: var(--slate); }
+.block { display: flex; flex-direction: column; gap: 10px; }
+.sub { font: 650 14px/1.2 var(--font); color: var(--slate); }
+.theme-list { display: flex; flex-wrap: wrap; gap: 8px 8px; }
+.theme-list span {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 8px;
+  font: 750 13px/1 var(--font); font-stretch: 112%; letter-spacing: .05em; text-transform: uppercase;
+  background: var(--bone); border: 1px solid var(--line); box-shadow: 0 3px 0 0 var(--found); margin-bottom: 3px;
+}
+.theme-list span.missed { background: transparent; border-style: dashed; box-shadow: none; color: var(--slate-faint); }
+.theme-list svg { width: 14px; height: 14px; color: var(--found); }
+.path { font-size: 14px; }
+.note { font-style: italic; font-size: 16px; color: var(--slate) !important; }
+
+/* how to play */
+.rules { display: flex; flex-direction: column; gap: 14px; }
+.rules p { color: var(--slate); }
+.rules p b { font-weight: 700; }
+.demo { display: flex; align-items: flex-end; justify-content: center; gap: 30px; padding: 20px 12px 16px; border-radius: 14px; background: var(--stone-deep); }
+.demo-group { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.demo-tiles { display: flex; gap: 4px; }
+.demo .tile { position: relative; --tw: 38px; --th: 42px; --edge: 4px; }
+.demo .stack { position: relative; width: 38px; height: 54px; }
+.demo .stack .tile { position: absolute; }
+.demo .stack .tile:first-child { top: 10px; }
+.demo-cap { font-size: 12px; line-height: 1.3; color: var(--slate-soft); text-align: center; max-width: 13em; }
+
+@media (max-height: 640px) {
+  .meta { padding-block: 6px 0; }
+  .board-wrap { padding-block: 8px; }
+  .key { height: 44px; }
+  .tray { min-height: 54px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
+}
+</style>
+
+<div id="app">
+  <main id="home" class="screen home" aria-labelledby="home-title">
+    <div class="home-inner">
+      <header class="masthead">
+        <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <h1 id="home-title">Strata</h1>
+      </header>
+      <p class="dek">Word puzzles in layers. Spell with the tiles you can reach, and dig down until the board is clear.</p>
+      <div><button class="key small" id="home-help" type="button">How to play</button></div>
+      <div class="core" id="progress"></div>
+      <div id="list"></div>
+      <p class="colophon">Every board is built around a handful of theme words and checked to be clearable. Your progress saves on this device.</p>
+    </div>
+  </main>
+
+  <section id="game" class="screen game" hidden aria-label="Puzzle">
+    <header class="bar">
+      <button class="icon-btn back" id="back" type="button" aria-label="All puzzles">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="title-block">
+        <h2 id="g-title"></h2>
+        <div class="g-sub"><span class="swatch" id="g-swatch"></span><span id="g-sub"></span></div>
+      </div>
+      <div class="bar-right">
+        <button class="timer" id="timer" type="button" aria-label="Pause">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          <span id="timer-text">0:00</span>
+        </button>
+        <button class="icon-btn" id="menu-btn" type="button" aria-label="Puzzle options">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
+      </div>
+    </header>
+    <div class="meta">
+      <div class="theme-track"><span class="theme-cells" id="theme-cells"></span><span>Theme</span></div>
+      <div class="count" id="count"></div>
+    </div>
+    <div class="board-wrap" id="board-wrap">
+      <div class="board" id="board" role="group" aria-label="Tiles"></div>
+      <div class="paused" id="paused" hidden>
+        <h3>Paused</h3>
+        <p>The board stays hidden while the clock is stopped.</p>
+        <button class="key dark" id="resume" type="button" style="width: 180px">Resume</button>
+      </div>
+    </div>
+    <div class="dock">
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <div class="played" id="played" aria-label="Words played"></div>
+      <div class="tray" id="tray" aria-live="polite"></div>
+      <div class="controls">
+        <button class="key" id="undo" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
+          Undo
+        </button>
+        <button class="key" id="del" type="button">Delete</button>
+        <button class="key primary" id="enter" type="button">Enter</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></div>
+
+<script id="dict" type="application/json">%%DICT%%</script>
+<script id="core">
+%%CORE%%
+</script>
+<script>
+/* ======================================================================
+   PUZZLES: hand-edited boards. To add one, append an entry with
+     id, title (the theme clue), level (Easy | Medium | Hard | Expert), note,
+     words: theme words in a playable order (they clear the board exactly; count = par),
+     tiles: [x, y, z, letter] in half-tile units (a tile is 2x2; z = layer, 0 is the table),
+     solution: tile indexes used by each theme word, in the same order as words.
+   ====================================================================== */
+var PUZZLES = %%PUZZLES%%;
+</script>
+<script>
+(function () {
+  'use strict';
+  var Core = window.StrataCore;
+  var LEVELS = [
+    { name: 'Easy', blurb: 'Short stacks and friendly letters.' },
+    { name: 'Medium', blurb: 'Taller stacks. Watch your vowels.' },
+    { name: 'Hard', blurb: 'Awkward letters, buried vowels.' },
+    { name: 'Expert', blurb: 'Q, Z and very little room to spare.' }
+  ];
+  var $ = function (id) { return document.getElementById(id); };
+  var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var ICON = {
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>',
+    scan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16.5 9"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>',
+    restart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v5h5"/><path d="M5.2 15a7.5 7.5 0 1 0 .9-7.4L4 9"/></svg>',
+    help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.8"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg>'
+  };
+
+  PUZZLES.forEach(function (p) {
+    p.tiles = p.tiles.map(function (t) { return { x: t[0], y: t[1], z: t[2], l: String(t[3]).toLowerCase() }; });
+    p.words = p.words.map(function (w) { return w.toLowerCase(); });
+  });
+  function levelIndex(p) {
+    for (var k = 0; k < LEVELS.length; k++) if (LEVELS[k].name === p.level) return k;
+    return 0;
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmt(s) {
+    s = Math.max(0, Math.floor(s || 0));
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
+    return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(r).padStart(2, '0');
+  }
+  var NUM = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+  function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
+  function spelled(n, w) { return (NUM[n] || n) + ' ' + w + (n === 1 ? '' : 's'); }
+  function restart(el, cls) { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+  function parPhrase(words, par) {
+    var d = words - par;
+    if (d === 0) return 'right at par';
+    return d < 0 ? spelled(-d, 'word') + ' under par' : spelled(d, 'word') + ' over par';
+  }
+
+  /* ---------- saved progress (this device only) ---------- */
+  var KEY = 'strata:v1';
+  var store = readStore();
+  function readStore() {
+    try {
+      var s = JSON.parse(localStorage.getItem(KEY));
+      if (s && s.v === 1 && s.p) return s;
+    } catch (e) { /* storage unavailable */ }
+    return { v: 1, p: {}, help: false };
+  }
+  function writeStore() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { /* storage unavailable */ } }
+  function recFor(id) { return store.p[id] || (store.p[id] = { moves: [], time: 0, assisted: false }); }
+
+  /* ---------- dictionary: decoded on first use ---------- */
+  var DICT = null;
+  function getDict() {
+    if (!DICT) DICT = Core.decodeDict(JSON.parse($('dict').textContent));
+    return DICT;
+  }
+
+  /* ---------- screens ---------- */
+  var screen = 'home';
+  function show(name) {
+    screen = name;
+    $('home').hidden = name !== 'home';
+    $('game').hidden = name !== 'game';
+  }
+
+  /* ---------- home ---------- */
+  function renderHome() {
+    var solved = 0, cells = '';
+    PUZZLES.forEach(function (p) {
+      var done = store.p[p.id] && store.p[p.id].best;
+      if (done) solved++;
+      cells += '<b class="' + (done ? 'on' : '') + '" style="--c: var(--lv' + levelIndex(p) + ')"></b>';
+    });
+    $('progress').innerHTML = '<span class="core-cells" aria-hidden="true">' + cells + '</span><span>' + solved + ' of ' + PUZZLES.length + ' cleared</span>';
+    var html = '';
+    LEVELS.forEach(function (lv, li) {
+      var ps = PUZZLES.filter(function (p) { return p.level === lv.name; });
+      if (!ps.length) return;
+      html += '<section class="group" style="--lv: var(--lv' + li + ')"><div class="group-head"><span class="band" aria-hidden="true"></span><h2>' + lv.name + '</h2><p>' + esc(lv.blurb) + '</p></div><ul>';
+      ps.forEach(function (p) {
+        var r = store.p[p.id] || {}, cls = '', sub, end = ICON.chev, par = p.words.length;
+        var inProgress = (r.moves && r.moves.length) || r.time;
+        if (r.best) {
+          cls = 'solved';
+          end = ICON.check;
+          sub = 'Cleared in ' + fmt(r.best.time) + ', ' + parPhrase(r.best.words, par);
+        } else if (inProgress) {
+          sub = 'In progress, ' + plural((r.moves || []).length, 'word') + ' played';
+        } else {
+          sub = p.tiles.length + ' tiles, par ' + par;
+        }
+        html += '<li><button class="pz ' + cls + '" type="button" data-id="' + p.id + '"><span class="chip">' + p.id + '</span>' +
+          '<span class="pz-text"><span class="pz-title">' + esc(p.title) + '</span><span class="pz-sub">' + sub + '</span></span>' +
+          '<span class="pz-end">' + end + '</span></button></li>';
+      });
+      html += '</ul></section>';
+    });
+    $('list').innerHTML = html;
+  }
+  $('list').addEventListener('click', function (e) {
+    var b = e.target.closest('.pz');
+    if (b) openPuzzle(+b.dataset.id);
+  });
+  $('home-help').addEventListener('click', function () { showHelp(); });
+
+  /* ---------- game state ---------- */
+  var G = null;
+  var tick = null;
+
+  function openPuzzle(id, opts) {
+    opts = opts || {};
+    var P = null;
+    PUZZLES.forEach(function (p) { if (p.id === id) P = p; });
+    if (!P) return;
+    var r = recFor(id);
+    G = {
+      P: P, tiles: P.tiles, n: P.tiles.length, g: Core.geometry(P.tiles),
+      alive: new Uint8Array(P.tiles.length).fill(1), sel: [], moves: [], state: [], els: [],
+      lex: null, solver: null, time: r.time || 0, assisted: !!r.assisted,
+      busy: false, paused: false, dead: false, complete: false, pendingSubmit: false
+    };
+    (r.moves || []).forEach(function (m) {
+      if (m.t.every(function (i) { return G.alive[i]; })) {
+        m.t.forEach(function (i) { G.alive[i] = 0; });
+        G.moves.push({ t: m.t.slice(), w: m.w });
+      }
+    });
+    show('game');
+    var li = levelIndex(P);
+    $('g-title').textContent = P.title;
+    $('g-sub').textContent = P.level + ', puzzle ' + P.id + ' of ' + PUZZLES.length;
+    $('g-swatch').style.setProperty('--lv', 'var(--lv' + li + ')');
+    $('paused').hidden = true;
+    buildBoard();
+    renderAll(true);
+    renderTimer();
+    var forP = P;
+    setTimeout(function () {
+      if (!G || G.P !== forP) return;
+      G.lex = Core.puzzleLexicon(getDict(), forP.tiles.map(function (t) { return t.l; }).join(''));
+      G.solver = Core.Solver(forP.tiles, G.lex);
+      evaluateBoard();
+      if (G.pendingSubmit) { G.pendingSubmit = false; submit(); }
+    }, 60);
+    if (r.done && !G.moves.length && !opts.replay) showResult(true);
+    else if (!store.help) showHelp();
+    else startTimer();
+  }
+
+  function goHome() {
+    stopTimer();
+    if (G && !G.complete) persist();
+    closeSheet(true, true);
+    G = null;
+    renderHome();
+    show('home');
+  }
+  $('back').addEventListener('click', goHome);
+
+  function persist() {
+    if (!G || G.complete) return;
+    var r = recFor(G.P.id);
+    r.moves = G.moves.map(function (m) { return { t: m.t, w: m.w }; });
+    r.time = G.time;
+    r.assisted = G.assisted;
+    writeStore();
+  }
+
+  /* ---------- board ---------- */
+  function buildBoard() {
+    var board = $('board');
+    board.textContent = '';
+    board.classList.remove('dim');
+    G.els = G.tiles.map(function (t, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'tile z' + Math.min(3, t.z);
+      b.dataset.i = i;
+      var s = document.createElement('span');
+      s.className = 'ch';
+      s.textContent = t.l;
+      b.appendChild(s);
+      board.appendChild(b);
+      return b;
+    });
+    sizeBoard();
+  }
+
+  /* Tiles sit on a half-tile grid. Each layer is raised a little higher than the one below,
+     so the colored soles of lower layers show beneath the tiles stacked on them. */
+  function sizeBoard() {
+    if (!G) return;
+    var wrap = $('board-wrap'), board = $('board');
+    var cs = getComputedStyle(wrap);
+    var W = wrap.clientWidth - 4, H = wrap.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - 4;
+    var maxX = 0, maxY = 0, maxZ = 0;
+    G.tiles.forEach(function (t) { maxX = Math.max(maxX, t.x); maxY = Math.max(maxY, t.y); maxZ = Math.max(maxZ, t.z); });
+    var cols = (maxX + 2) / 2, rows = (maxY + 2) / 2;
+    var GAP = 0.1, ASPECT = 1.1, EDGE = 0.085, RISE = 0.14;
+    var kW = cols + (cols - 1) * GAP + 0.05;
+    var kH = rows * ASPECT + (rows - 1) * GAP + EDGE + RISE * maxZ + 0.12;
+    var tw = Math.floor(Math.max(26, Math.min(W / kW, H / kH, 70)));
+    var th = Math.round(tw * ASPECT), gap = tw * GAP, edge = Math.max(3, Math.round(tw * EDGE)), rise = Math.round(tw * RISE);
+    board.style.width = Math.ceil(tw * kW) + 'px';
+    board.style.height = Math.ceil(tw * kH) + 'px';
+    board.style.setProperty('--tw', tw + 'px');
+    board.style.setProperty('--th', th + 'px');
+    board.style.setProperty('--edge', edge + 'px');
+    G.tiles.forEach(function (t, i) {
+      var el = G.els[i];
+      el.style.left = ((t.x / 2) * (tw + gap) + 2).toFixed(1) + 'px';
+      el.style.top = ((t.y / 2) * (th + gap) + (maxZ - t.z) * rise + 5).toFixed(1) + 'px';
+      el.style.zIndex = String(t.z * 100 + t.y * 2 + 1);
+    });
+  }
+  if (window.ResizeObserver) new ResizeObserver(function () { sizeBoard(); }).observe($('board-wrap'));
+  else window.addEventListener('resize', sizeBoard);
+
+  function tileState(i) {
+    if (!G.alive[i]) return 'gone';
+    if (Core.isCovered(G.g, G.alive, i)) return 'hidden';
+    return Core.isFree(G.g, G.alive, i) ? 'free' : 'locked';
+  }
+
+  function refreshTiles(initial) {
+    for (var i = 0; i < G.n; i++) {
+      var st = tileState(i), prev = G.state[i], el = G.els[i];
+      if (st !== prev) {
+        el.classList.remove('free', 'locked', 'hidden', 'gone');
+        el.classList.add(st);
+        if (!initial && prev === 'hidden' && st !== 'gone') restart(el, 'revealed');
+        if (!initial && prev === 'gone' && st !== 'gone') restart(el, 'returning');
+        G.state[i] = st;
+      }
+      var selected = G.sel.indexOf(i) >= 0;
+      el.classList.toggle('sel', selected);
+      el.tabIndex = st === 'free' ? 0 : -1;
+      var L = G.tiles[i].l.toUpperCase();
+      el.setAttribute('aria-label', st === 'hidden' ? 'Buried tile' : st === 'locked' ? L + ', locked' : selected ? L + ', selected' : L);
+      if (st === 'gone') el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
+    }
+  }
+
+  $('board').addEventListener('click', function (e) {
+    var b = e.target.closest('.tile');
+    if (!b || !G || G.busy || G.paused || G.complete) return;
+    tapTile(+b.dataset.i);
+  });
+  $('board').addEventListener('animationend', function (e) {
+    var el = e.target.closest ? e.target.closest('.tile') : null;
+    if (!el) return;
+    if (e.animationName === 'tile-in') el.classList.remove('returning');
+    if (e.animationName === 'ch-in') el.classList.remove('revealed');
+    if (e.animationName === 'nudge') el.classList.remove('nudge');
+  });
+
+  var lockedHintShown = false;
+  function tapTile(i) {
+    var k = G.sel.indexOf(i);
+    if (k >= 0) { G.sel.splice(k, 1); renderSel(); return; }
+    if (G.dead) return;
+    if (!Core.isFree(G.g, G.alive, i)) {
+      restart(G.els[i], 'nudge');
+      if (!lockedHintShown) {
+        lockedHintShown = true;
+        toast(G.state[i] === 'hidden' ? 'That tile is buried. Clear the tiles on top first.' : 'That tile is locked. Free its left or right side first.');
+      }
+      return;
+    }
+    if (G.sel.length >= 14) return;
+    G.sel.push(i);
+    renderSel();
+  }
+
+  function selectByLetter(ch) {
+    if (!G || G.busy || G.paused || G.complete || G.dead) return;
+    var best = -1;
+    for (var i = 0; i < G.n; i++) {
+      if (G.tiles[i].l !== ch || G.sel.indexOf(i) >= 0 || !Core.isFree(G.g, G.alive, i)) continue;
+      if (best < 0) { best = i; continue; }
+      var a = G.tiles[i], b = G.tiles[best];
+      if (a.z > b.z || (a.z === b.z && (a.y < b.y || (a.y === b.y && a.x < b.x)))) best = i;
+    }
+    if (best >= 0) { G.sel.push(best); renderSel(); }
+  }
+
+  /* ---------- rendering ---------- */
+  function renderAll(initial) {
+    refreshTiles(initial);
+    renderTray();
+    renderPlayed(initial);
+    renderMeta(initial);
+    renderControls();
+  }
+  function renderSel() { refreshTiles(false); renderTray(); renderControls(); }
+
+  function renderTray() {
+    var tray = $('tray');
+    if (G.dead) {
+      var left = 0;
+      for (var i = 0; i < G.n; i++) left += G.alive[i];
+      tray.innerHTML = '<div class="dead"><strong>' + (left < 3 ? 'Only ' + plural(left, 'tile') + ' left, too few for a word.' : 'No words left in the free tiles.') +
+        '</strong><span>Undo a word to try another path, or <button type="button" data-act="restart-ask">restart</button>.</span></div>';
+      return;
+    }
+    if (!G.sel.length) {
+      tray.innerHTML = '<span class="tray-hint">' + (G.moves.length ? 'Tap tiles to spell your next word' : 'Tap tiles to spell a word') + '</span>';
+      return;
+    }
+    var avail = tray.clientWidth - 24, n = G.sel.length;
+    var cw = Math.max(20, Math.min(34, Math.floor((avail - (n - 1) * 4) / n)));
+    tray.innerHTML = '<span class="cells" style="--cw:' + cw + 'px">' + G.sel.map(function (i, k) {
+      var L = G.tiles[i].l.toUpperCase();
+      return '<button class="cell" type="button" data-k="' + k + '" aria-label="Remove ' + L + '">' + L + '</button>';
+    }).join('') + '</span>';
+  }
+  $('tray').addEventListener('click', function (e) {
+    if (!G) return;
+    var act = e.target.closest('[data-act]');
+    if (act) { onAct(act.dataset.act); return; }
+    var c = e.target.closest('.cell');
+    if (c && !G.busy) { G.sel.splice(+c.dataset.k, 1); renderSel(); }
+  });
+
+  function renderPlayed(initial) {
+    var el = $('played');
+    if (!G.moves.length) { el.innerHTML = '<span class="hint">Words you play collect here</span>'; return; }
+    var seen = {};
+    el.innerHTML = G.moves.map(function (m, k) {
+      var theme = G.P.words.indexOf(m.w) >= 0 && !seen[m.w];
+      if (theme) seen[m.w] = 1;
+      var fresh = !initial && k === G.moves.length - 1;
+      return '<span class="w' + (theme ? ' theme' : '') + (fresh ? ' new' : '') + '">' + esc(m.w) + '</span>';
+    }).join('');
+    el.scrollLeft = el.scrollWidth;
+  }
+
+  function foundThemes() {
+    var f = [];
+    G.P.words.forEach(function (w) { if (G.moves.some(function (m) { return m.w === w; })) f.push(w); });
+    return f;
+  }
+
+  function renderMeta(initial) {
+    var found = foundThemes().length, total = G.P.words.length, cells = $('theme-cells');
+    var prevOn = cells.querySelectorAll('b.on').length;
+    var html = '';
+    for (var k = 0; k < total; k++) html += '<b class="' + (k < found ? 'on' : '') + (!initial && k < found && k >= prevOn ? ' pop' : '') + '"></b>';
+    cells.innerHTML = html;
+    cells.setAttribute('aria-label', found + ' of ' + total + ' theme words found');
+    $('count').innerHTML = '<b>' + G.moves.length + '</b> ' + (G.moves.length === 1 ? 'word' : 'words') + ', par <b>' + total + '</b>';
+  }
+
+  function renderControls() {
+    $('undo').disabled = !G.moves.length || G.complete;
+    $('del').disabled = !G.sel.length;
+    $('enter').disabled = G.dead || G.complete;
+    $('enter').classList.toggle('ready', G.sel.length >= 3 && !G.dead);
+  }
+
+  /* ---------- timer ---------- */
+  function renderTimer() { $('timer-text').textContent = fmt(G ? G.time : 0); }
+  function startTimer() {
+    if (tick || !G || G.paused || G.complete || screen !== 'game' || sheetOpen || document.hidden) return;
+    tick = setInterval(function () {
+      if (!G) return stopTimer();
+      G.time++;
+      renderTimer();
+      if (G.time % 5 === 0) persist();
+    }, 1000);
+  }
+  function stopTimer() { if (tick) { clearInterval(tick); tick = null; } }
+  function setPaused(p) {
+    if (!G || G.complete) return;
+    G.paused = p;
+    $('paused').hidden = !p;
+    $('timer').setAttribute('aria-label', p ? 'Resume' : 'Pause');
+    if (p) { stopTimer(); persist(); } else startTimer();
+  }
+  $('timer').addEventListener('click', function () { if (G) setPaused(!G.paused); });
+  $('resume').addEventListener('click', function () { setPaused(false); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { stopTimer(); persist(); } else startTimer();
+  });
+  window.addEventListener('pagehide', function () { persist(); });
+
+  /* ---------- playing words ---------- */
+  function reject(msg) {
+    toast(msg);
+    restart($('tray'), 'shake');
+  }
+
+  function submit() {
+    if (!G || G.busy || G.dead || G.complete || G.paused) return;
+    if (!G.sel.length) return;
+    if (G.sel.length < 3) { reject('Use at least three letters.'); return; }
+    if (!G.lex) { G.pendingSubmit = true; return; }
+    var word = G.sel.map(function (i) { return G.tiles[i].l; }).join('');
+    if (!G.lex.words.has(word)) { reject('Not in the dictionary.'); return; }
+    play(G.sel.slice(), word);
+  }
+
+  function play(tiles, word) {
+    G.busy = true;
+    var wasFound = foundThemes();
+    tiles.forEach(function (i, k) {
+      var el = G.els[i];
+      el.style.animationDelay = reduceMotion ? '0ms' : (k * 32) + 'ms';
+      el.classList.add('leaving');
+    });
+    setTimeout(function () {
+      if (!G) return;
+      tiles.forEach(function (i) {
+        G.alive[i] = 0;
+        G.els[i].classList.remove('leaving');
+        G.els[i].style.animationDelay = '';
+      });
+      G.moves.push({ t: tiles, w: word });
+      G.sel = [];
+      G.busy = false;
+      var isNewTheme = G.P.words.indexOf(word) >= 0 && wasFound.indexOf(word) < 0;
+      renderAll(false);
+      persist();
+      var left = 0;
+      for (var i = 0; i < G.n; i++) left += G.alive[i];
+      if (left === 0) { complete(); return; }
+      if (isNewTheme) toast('Theme word found.');
+      evaluateBoard();
+    }, reduceMotion ? 0 : 250 + tiles.length * 32);
+  }
+
+  function evaluateBoard() {
+    if (!G || !G.solver || G.complete) return;
+    var left = 0;
+    for (var i = 0; i < G.n; i++) left += G.alive[i];
+    var dead = left > 0 && (left < 3 || G.solver.moves(G.alive, false).length === 0);
+    if (dead !== G.dead) {
+      G.dead = dead;
+      if (dead) G.sel = [];
+      $('board').classList.toggle('dim', dead);
+      renderSel();
+    }
+  }
+
+  function undo(count) {
+    if (!G || G.busy || !G.moves.length || G.complete) return;
+    count = Math.min(count || 1, G.moves.length);
+    for (var k = 0; k < count; k++) {
+      G.moves.pop().t.forEach(function (i) { G.alive[i] = 1; });
+    }
+    G.sel = [];
+    G.dead = false;
+    $('board').classList.remove('dim');
+    renderAll(false);
+    persist();
+    evaluateBoard();
+  }
+
+  function deleteLast() {
+    if (!G || G.busy || !G.sel.length) return;
+    G.sel.pop();
+    renderSel();
+  }
+
+  $('enter').addEventListener('click', submit);
+  $('del').addEventListener('click', deleteLast);
+  $('undo').addEventListener('click', function () { undo(1); });
+
+  function complete() {
+    G.complete = true;
+    stopTimer();
+    var r = recFor(G.P.id);
+    var result = { time: G.time, words: G.moves.length, assisted: G.assisted, found: foundThemes(), list: G.moves.map(function (m) { return m.w; }) };
+    r.done = result;
+    if (!r.best || result.words < r.best.words || (result.words === r.best.words && result.time < r.best.time)) {
+      r.best = { time: result.time, words: result.words, assisted: result.assisted };
+    }
+    r.moves = [];
+    r.time = 0;
+    r.assisted = false;
+    writeStore();
+    renderControls();
+    setTimeout(function () { showResult(false); }, reduceMotion ? 0 : 420);
+  }
+
+  /* ---------- check and reveal ---------- */
+  function undosToRecover() {
+    var alive = Uint8Array.from(G.alive);
+    for (var k = 1; k <= G.moves.length; k++) {
+      G.moves[G.moves.length - k].t.forEach(function (i) { alive[i] = 1; });
+      if (G.solver.solve(alive, 300000).status === 'clear') return k;
+    }
+    return G.moves.length;
+  }
+
+  function checkBoard() {
+    closeSheet(true);
+    if (!G.solver) { toast('The word list is still loading.'); return; }
+    var res = G.solver.solve(G.alive, 300000);
+    if (res.status === 'clear') { toast('Still clearable. Keep going.'); startTimer(); return; }
+    if (res.status === 'unknown') { toast('Too many paths to tell yet.'); startTimer(); return; }
+    showStuck(undosToRecover());
+  }
+
+  function revealWord() {
+    closeSheet(true);
+    if (!G.solver) { toast('The word list is still loading.'); return; }
+    var res = G.solver.solve(G.alive, 300000);
+    if (res.status === 'stuck') { showStuck(undosToRecover()); return; }
+    if (res.status !== 'clear' || !res.path.length) { toast('No clear path found from here.'); startTimer(); return; }
+    var m = res.path[0], pool = m.tiles.slice(), order = [];
+    m.word.split('').forEach(function (ch) {
+      for (var j = 0; j < pool.length; j++) if (G.tiles[pool[j]].l === ch) { order.push(pool[j]); pool.splice(j, 1); return; }
+    });
+    G.sel = order;
+    G.assisted = true;
+    persist();
+    renderSel();
+    toast('Revealed a word. Tap Enter to play it.');
+    startTimer();
+  }
+
+  function sheetHead(title) {
+    return '<div class="sheet-head"><h2 id="sheet-title">' + title + '</h2>' +
+      '<button class="icon-btn close" type="button" data-act="close" aria-label="Close">' + ICON.close + '</button></div>';
+  }
+
+  function showStuck(k) {
+    openSheet(
+      sheetHead('This board can’t be cleared from here') +
+      '<p>Some letters are stranded now. Undo ' + spelled(k, 'word') + ' to get back to a board that can still be cleared.</p>' +
+      '<div class="actions"><button class="key dark" type="button" data-act="undo-' + k + '">Undo ' + plural(k, 'word') + '</button>' +
+      '<button class="key" type="button" data-act="close">Keep playing</button></div>'
+    );
+  }
+
+  /* ---------- sheets ---------- */
+  var sheetOpen = false, sheetOnClose = null;
+  function openSheet(html, onClose) {
+    var s = $('sheet');
+    s.innerHTML = html;
+    s.hidden = false;
+    $('scrim').hidden = false;
+    sheetOpen = true;
+    sheetOnClose = onClose || null;
+    stopTimer();
+    var f = s.querySelector('.key.dark') || s.querySelector('button');
+    if (f) setTimeout(function () { try { f.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 30);
+  }
+  function closeSheet(silent, skipHook) {
+    if (!sheetOpen) return;
+    $('sheet').hidden = true;
+    $('scrim').hidden = true;
+    sheetOpen = false;
+    var f = sheetOnClose;
+    sheetOnClose = null;
+    if (f && !skipHook) f();
+    if (!silent) startTimer();
+  }
+  $('scrim').addEventListener('click', function () { closeSheet(false); });
+  $('sheet').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (b) onAct(b.dataset.act);
+  });
+
+  function onAct(act) {
+    if (act === 'close') { closeSheet(false); return; }
+    if (act === 'home') { goHome(); return; }
+    if (act === 'help') { closeSheet(true); showHelp(); return; }
+    if (act === 'check') { checkBoard(); return; }
+    if (act === 'reveal') { revealWord(); return; }
+    if (act === 'restart-ask') { askRestart(); return; }
+    if (act === 'restart') { closeSheet(true); restartPuzzle(); return; }
+    if (act === 'again') { var id = G.P.id; closeSheet(true, true); openPuzzle(id, { replay: true }); return; }
+    if (act === 'next') {
+      var nid = G.P.id + 1;
+      closeSheet(true, true);
+      if (PUZZLES.some(function (p) { return p.id === nid; })) openPuzzle(nid); else goHome();
+      return;
+    }
+    if (act.indexOf('undo-') === 0) { closeSheet(true); undo(+act.slice(5)); startTimer(); return; }
+  }
+
+  function showMenu() {
+    if (!G || G.complete) return;
+    openSheet(
+      sheetHead(esc(G.P.title)) +
+      '<div class="menu">' +
+      '<button type="button" data-act="check">' + ICON.scan + '<span><b>Check board</b><small>Find out whether the board can still be cleared.</small></span></button>' +
+      '<button type="button" data-act="reveal">' + ICON.eye + '<span><b>Reveal a word</b><small>Fill in a word that keeps a clear possible. Marks this solve as assisted.</small></span></button>' +
+      '<button type="button" data-act="restart-ask">' + ICON.restart + '<span><b>Restart puzzle</b><small>Put every tile back and reset the clock.</small></span></button>' +
+      '<button type="button" data-act="help">' + ICON.help + '<span><b>How to play</b><small>Free tiles, buried tiles and par.</small></span></button>' +
+      '</div>'
+    );
+  }
+  $('menu-btn').addEventListener('click', showMenu);
+
+  function askRestart() {
+    openSheet(
+      sheetHead('Start ' + esc(G.P.title) + ' over?') +
+      '<p>Every tile goes back on the board and the clock resets to 0:00.</p>' +
+      '<div class="actions"><button class="key dark" type="button" data-act="restart">Restart</button>' +
+      '<button class="key" type="button" data-act="close">Cancel</button></div>'
+    );
+  }
+
+  function restartPuzzle() {
+    G.moves = [];
+    G.alive.fill(1);
+    G.sel = [];
+    G.time = 0;
+    G.assisted = false;
+    G.dead = false;
+    G.paused = false;
+    $('paused').hidden = true;
+    $('board').classList.remove('dim');
+    renderAll(false);
+    renderTimer();
+    persist();
+    startTimer();
+  }
+
+  function showHelp() {
+    store.help = true;
+    writeStore();
+    openSheet(
+      sheetHead('How to play') +
+      '<div class="rules">' +
+      '<p><b>Spell words with free tiles.</b> Tap tiles in order, then Enter. Words need at least three letters.</p>' +
+      '<div class="demo" aria-hidden="true">' +
+        '<div class="demo-group"><div class="demo-tiles"><span class="tile z0 free"><span class="ch">C</span></span><span class="tile z0 locked"><span class="ch">A</span></span><span class="tile z0 free"><span class="ch">T</span></span></div>' +
+        '<div class="demo-cap">The ends are free. A stays locked until C or T is played.</div></div>' +
+        '<div class="demo-group"><div class="stack"><span class="tile z0 hidden"><span class="ch">?</span></span><span class="tile z1 free"><span class="ch">E</span></span></div>' +
+        '<div class="demo-cap">Something is buried under E.</div></div>' +
+      '</div>' +
+      '<p><b>A tile is free</b> when nothing sits on top of it and its left or right side is open. Played tiles leave the board, which frees their neighbors and turns over the tiles beneath. Each layer stands on its own color, so you can tell how deep a stack goes.</p>' +
+      '<p><b>Clear every tile to solve.</b> The title hints at a theme. The theme words use every tile exactly once, so finding them all puts you at par.</p>' +
+      '<p><b>Not every path works.</b> Leftover letters can strand you. Undo as often as you like, and Check tells you whether the board can still be cleared.</p>' +
+      '</div>' +
+      '<div class="actions"><button class="key dark" type="button" data-act="close">' + (screen === 'game' ? 'Back to the puzzle' : 'Got it') + '</button></div>'
+    );
+  }
+
+  function showResult(review) {
+    var r = recFor(G.P.id), d = r.done || {}, par = G.P.words.length;
+    var verdict = plural(d.words || 0, 'word') + ', ' + parPhrase(d.words || 0, par) + '.';
+    if (d.assisted) verdict += ' Solved with a reveal.';
+    var found = d.found || [];
+    var chips = G.P.words.map(function (w) {
+      var got = found.indexOf(w) >= 0;
+      return '<span class="' + (got ? 'found' : 'missed') + '">' + (got ? ICON.check : '') + esc(w) + '</span>';
+    }).join('');
+    var hasNext = PUZZLES.some(function (p) { return p.id === G.P.id + 1; });
+    var best = review && r.best && (r.best.words !== d.words || r.best.time !== d.time)
+      ? '<p>Your best is ' + fmt(r.best.time) + ' with ' + plural(r.best.words, 'word') + '.</p>' : '';
+    var title = (review ? 'You cleared ' + esc(G.P.title) + ' in ' : 'Cleared in ') + fmt(d.time);
+    openSheet(
+      sheetHead(title) +
+      '<p class="verdict">' + verdict + '</p>' + best +
+      '<div class="block"><h3 class="sub">Theme words, ' + found.length + ' of ' + par + '</h3><div class="theme-list">' + chips + '</div></div>' +
+      (d.list && d.list.length ? '<p class="path">Your words: ' + d.list.map(esc).join(', ') + '</p>' : '') +
+      '<p class="note">' + esc(G.P.note) + '</p>' +
+      '<div class="actions">' +
+        (hasNext ? '<button class="key dark" type="button" data-act="next">Next puzzle</button>' : '') +
+        '<button class="key' + (hasNext ? '' : ' dark') + '" type="button" data-act="home">All puzzles</button>' +
+        '<button class="link-btn" type="button" data-act="again">Play again</button>' +
+      '</div>',
+      function () { if (G && G.complete) goHome(); else startTimer(); }
+    );
+  }
+
+  /* ---------- toast ---------- */
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('on'); }, 1800);
+  }
+
+  /* ---------- keyboard ---------- */
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (sheetOpen) { if (e.key === 'Escape') closeSheet(false); return; }
+    if (screen !== 'game' || !G) return;
+    if (e.key === 'Enter') { e.preventDefault(); submit(); }
+    else if (e.key === 'Backspace') { e.preventDefault(); deleteLast(); }
+    else if (e.key === 'Escape') { G.sel = []; renderSel(); }
+    else if (/^[a-zA-Z]$/.test(e.key)) selectByLetter(e.key.toLowerCase());
+  });
+
+  /* ---------- boot (keeps your place across page updates) ---------- */
+  function snapshot() { return { screen: screen, pid: G ? G.P.id : null }; }
+  function start(data) {
+    data = data || {};
+    renderHome();
+    if (data.screen === 'game' && data.pid) openPuzzle(data.pid); else show('home');
+    setTimeout(getDict, 400);
+  }
+  var started = false;
+  function boot(d) { if (started) return; started = true; start(d); }
+  var hot = null;
+  try {
+    hot = window.claude && window.claude.hot;
+    if (hot && typeof hot.snapshot === 'function') hot.snapshot(snapshot);
+    if (hot && typeof hot.ready === 'function') hot.ready(function (d) { boot(d); });
+    else boot((hot && hot.data) || {});
+  } catch (e) { boot({}); }
+  setTimeout(function () { boot((hot && hot.data) || {}); }, 600);
+
+  window.__strata = { get G() { return G; }, openPuzzle: openPuzzle, submit: submit, tapTile: tapTile, undo: undo, store: function () { return store; } };
+})();
+</script>

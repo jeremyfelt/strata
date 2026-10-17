@@ -1,0 +1,54 @@
+"""Assemble the game (run from the repo root).
+
+  index.html                  standalone page for GitHub Pages / home-screen install
+  dist/strata-artifact.html   the same game as a claude.ai artifact body
+
+Inputs: src/app.html (markup, styles, app script), src/core.js (rules + solver),
+src/puzzles.json, src/dict.json, icons/icon-180.png.
+"""
+import base64, json, os
+
+app = open('src/app.html').read()
+core = open('src/core.js').read()
+dict_json = open('src/dict.json').read()
+puzzles = open('src/puzzles.json').read().strip()
+icon_b64 = base64.b64encode(open('icons/icon-180.png', 'rb').read()).decode()
+assert '</script' not in dict_json and '</script' not in core and '</script' not in puzzles
+json.loads(puzzles)  # fail early on a malformed edit
+
+def fill(icon_href):
+    out = (app.replace('%%ICON_HREF%%', icon_href).replace('%%DICT%%', dict_json)
+              .replace('%%CORE%%', core).replace('%%PUZZLES%%', puzzles))
+    assert '%%' not in out.replace('100%%', '')
+    return out
+
+# claude.ai artifact: the host wraps the page in its own document
+os.makedirs('dist', exist_ok=True)
+artifact = fill('data:image/png;base64,' + icon_b64)
+open('dist/strata-artifact.html', 'w').write(artifact)
+
+# standalone document
+page = fill('icons/icon-180.png')
+cut = page.index('</style>') + len('</style>')
+head, body = page[:cut], page[cut:]
+standalone = f'''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
+{head}
+<link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>{body}
+<script>
+if ('serviceWorker' in navigator && location.protocol === 'https:') {{
+  window.addEventListener('load', function () {{ navigator.serviceWorker.register('sw.js').catch(function () {{}}); }});
+}}
+</script>
+</body>
+</html>
+'''
+open('index.html', 'w').write(standalone)
+n = len(json.loads(puzzles))
+print(f'index.html {len(standalone.encode()) // 1024} KB, dist/strata-artifact.html {len(artifact.encode()) // 1024} KB, {n} puzzles')
