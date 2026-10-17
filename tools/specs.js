@@ -1,49 +1,130 @@
-// Puzzle specs: the editorial side of each board. The title is the clue; the theme words
-// clear the board exactly (their count is par). `layout` names a shape in layouts.js and
-// `target` is the clear rate we aim for with the theme-blind simulated player.
+// Puzzle specs: the editorial side of each board. Each day has one puzzle per level
+// (Easy, Medium, Hard, Expert). The title is the clue; the theme words clear the board exactly
+// (their count is par). `layout` names a shape in layouts.js and `target` is the clear rate we
+// aim for with the theme-blind simulated player: about .45 Easy, .30 Medium, .16 Hard, .05 Expert.
 //
 // src/puzzles.json is the source of truth for published boards. Re-running make.js for one
 // of these specs produces a fresh board, not the published one.
 //
-// To add a puzzle: append a spec with the next id, then
-//   node tools/make.js <id>          -> out/puzzle-<id>.json (prints the board + stats)
-//   node tools/add_puzzle.js <id>    -> adds it to src/puzzles.json
-//   python3 tools/build.py           -> rebuilds index.html
+// To add a day: append four specs (one per level) with the next ids and the same date, then
+//   node tools/make.js <id> ...       -> out/puzzle-<id>.json (prints each board + stats)
+//   node tools/add_puzzle.js <id> ... -> adds them to src/puzzles.json
+//   python3 tools/build_dict.py       -> marks the new theme words as common (for Reveal)
+//   python3 tools/build.py            -> rebuilds index.html
 module.exports = [
-  { id: 1, title: 'Harvest Moon', level: 'Easy', layout: 'hearth15', target: 0.56, seed: 1001,
+  { id: 1, date: '2026-10-17', title: 'Harvest Moon', level: 'Easy', layout: 'hearth15', target: 0.56, seed: 1001,
     words: ['cider', 'gourd', 'maple'],
     note: 'Three flavors of October.' },
-  { id: 2, title: 'Snow Day', level: 'Easy', layout: 'dome20', target: 0.45, seed: 1002,
+  { id: 2, date: '2026-10-18', title: 'Snow Day', level: 'Easy', layout: 'dome20', target: 0.45, seed: 1002,
     words: ['sled', 'scarf', 'igloo', 'mitten'],
     note: 'School’s out. Bundle up.' },
-  { id: 3, title: 'Top Drawer', level: 'Easy', layout: 'shelves21', target: 0.33, seed: 1004,
+  { id: 3, date: '2026-10-19', title: 'Top Drawer', level: 'Easy', layout: 'shelves21', target: 0.33, seed: 1004,
     words: ['whisk', 'ladle', 'tongs', 'grater'],
     note: 'Everything a cook reaches for without looking.' },
-  { id: 4, title: 'Tuning Up', level: 'Medium', layout: 'roof23', target: 0.38, seed: 1003,
+  { id: 4, date: '2026-10-17', title: 'Tuning Up', level: 'Medium', layout: 'roof23', target: 0.38, seed: 1003,
     words: ['viola', 'cello', 'oboe', 'flute', 'harp'],
     note: 'Five voices from the orchestra pit.' },
-  { id: 5, title: 'Fresh Baked', level: 'Medium', layout: 'keep29', target: 0.29, seed: 1005,
+  { id: 5, date: '2026-10-18', title: 'Fresh Baked', level: 'Medium', layout: 'keep29', target: 0.29, seed: 1005,
     words: ['scone', 'bagel', 'eclair', 'muffin', 'strudel'],
     note: 'One from each shelf of the bakery case.' },
-  { id: 6, title: 'Deal Me In', level: 'Medium', layout: 'towers28', target: 0.25, seed: 1006,
+  { id: 6, date: '2026-10-19', title: 'Deal Me In', level: 'Medium', layout: 'towers28', target: 0.25, seed: 1006,
     words: ['poker', 'rummy', 'bridge', 'hearts', 'spades'],
     note: 'Five games, one deck.' },
-  { id: 7, title: 'In Bloom', level: 'Hard', layout: 'flower26', target: 0.2, seed: 1007,
+  { id: 7, date: '2026-10-17', title: 'In Bloom', level: 'Hard', layout: 'flower26', target: 0.2, seed: 1007,
     words: ['tulip', 'peony', 'dahlia', 'aster', 'lilac'],
     note: 'A bouquet in five stems.' },
-  { id: 8, title: 'Tool Time', level: 'Hard', layout: 'anvil29', target: 0.13, seed: 1009,
+  { id: 8, date: '2026-10-18', title: 'Tool Time', level: 'Hard', layout: 'anvil29', target: 0.13, seed: 1009,
     words: ['wrench', 'pliers', 'hammer', 'chisel', 'clamp'],
     note: 'A full workbench, consonants and all.' },
-  { id: 9, title: 'Stargazing', level: 'Hard', layout: 'stairs28', target: 0.16, seed: 1008,
+  { id: 9, date: '2026-10-19', title: 'Stargazing', level: 'Hard', layout: 'stairs28', target: 0.16, seed: 1008,
     words: ['comet', 'orbit', 'nebula', 'quasar', 'meteor'],
     note: 'Look up. Keep looking.' },
-  { id: 10, title: 'On Safari', level: 'Expert', layout: 'savanna34', target: 0.1, seed: 1010,
+  { id: 10, date: '2026-10-17', title: 'On Safari', level: 'Expert', layout: 'savanna34', target: 0.1, seed: 1010,
     words: ['zebra', 'hyena', 'jackal', 'impala', 'rhino', 'giraffe'],
     note: 'Six sightings across the plain.' },
-  { id: 11, title: 'Your Move', level: 'Expert', layout: 'bridge29', target: 0.03, seed: 1011,
+  { id: 11, date: '2026-10-18', title: 'Your Move', level: 'Expert', layout: 'bridge29', target: 0.03, seed: 1011,
     words: ['rook', 'pawn', 'king', 'queen', 'bishop', 'knight'],
     note: 'Every piece on the board, pawn to king.' },
-  { id: 12, title: 'Forecast', level: 'Expert', layout: 'cloud34', target: 0.05, seed: 1012,
+  { id: 12, date: '2026-10-19', title: 'Forecast', level: 'Expert', layout: 'cloud34', target: 0.05, seed: 1012,
     words: ['hail', 'sleet', 'frost', 'squall', 'thunder', 'drizzle'],
     note: 'Six kinds of weather, none of it good.' },
+
+  // ---- Tuesday, October 20 ----
+  { id: 13, date: '2026-10-20', title: 'Beach Day', level: 'Easy', layout: 'porch17', target: 0.45,
+    words: ['sand', 'shell', 'wave', 'tide'],
+    note: 'Everything the tide brings in.' },
+  { id: 14, date: '2026-10-20', title: 'Road Trip', level: 'Medium', layout: 'ridge27', target: 0.3,
+    words: ['motel', 'detour', 'route', 'snacks', 'diner'],
+    note: 'Are we there yet?' },
+  { id: 15, date: '2026-10-20', title: 'Spice Rack', level: 'Hard', layout: 'jars30', target: 0.16,
+    words: ['cumin', 'clove', 'nutmeg', 'saffron', 'paprika'],
+    note: 'Five jars from the back of the cupboard.' },
+  { id: 16, date: '2026-10-20', title: 'Gem Show', level: 'Expert', layout: 'facet27', target: 0.05,
+    words: ['ruby', 'opal', 'jade', 'onyx', 'topaz', 'garnet'],
+    note: 'Six stones under glass.' },
+  // ---- Wednesday, October 21 ----
+  { id: 17, date: '2026-10-21', title: 'Around the Fire', level: 'Easy', layout: 'hut19', target: 0.45,
+    words: ['tent', 'ember', 'spark', 'smoke'],
+    note: 'Pitch the tent, then pull up a log.' },
+  { id: 18, date: '2026-10-21', title: 'Knit One', level: 'Medium', layout: 'spool25', target: 0.3,
+    words: ['yarn', 'wool', 'stitch', 'needle', 'cable'],
+    note: 'Purl two.' },
+  { id: 19, date: '2026-10-21', title: 'Bird Watch', level: 'Hard', layout: 'nest24', target: 0.16,
+    words: ['finch', 'robin', 'heron', 'hawk', 'egret'],
+    note: 'Five more for the life list.' },
+  { id: 20, date: '2026-10-21', title: 'Dance Card', level: 'Expert', layout: 'hall32', target: 0.05,
+    words: ['waltz', 'tango', 'salsa', 'rumba', 'foxtrot', 'samba'],
+    note: 'Every dance is spoken for.' },
+  // ---- Thursday, October 22 ----
+  { id: 21, date: '2026-10-22', title: 'Tea Party', level: 'Easy', layout: 'gable17', target: 0.45,
+    words: ['teapot', 'saucer', 'sugar'],
+    note: 'Pinkies out.' },
+  { id: 22, date: '2026-10-22', title: 'Movie Night', level: 'Medium', layout: 'marquee29', target: 0.3,
+    words: ['popcorn', 'ticket', 'trailer', 'usher', 'soda'],
+    note: 'Please silence your phones.' },
+  { id: 23, date: '2026-10-22', title: 'Jazz Club', level: 'Hard', layout: 'stage28', target: 0.16,
+    words: ['bebop', 'swing', 'blues', 'riff', 'scat', 'combo'],
+    note: 'Late set, low lights.' },
+  { id: 24, date: '2026-10-22', title: 'Game Day', level: 'Expert', layout: 'field31', target: 0.05,
+    words: ['hockey', 'boxing', 'kayak', 'squash', 'judo', 'polo'],
+    note: 'Six sports, one long weekend.' },
+  // ---- Friday, October 23 ----
+  { id: 25, date: '2026-10-23', title: 'Lights Out', level: 'Easy', layout: 'dome20', target: 0.45,
+    words: ['pillow', 'dream', 'sleep', 'yawn'],
+    note: 'Off to bed.' },
+  { id: 26, date: '2026-10-23', title: 'Farm Stand', level: 'Medium', layout: 'furrow27', target: 0.3,
+    words: ['carrot', 'radish', 'potato', 'onion', 'corn'],
+    note: 'Pulled from the dirt this morning.' },
+  { id: 27, date: '2026-10-23', title: 'Sweet Tooth', level: 'Hard', layout: 'cake29', target: 0.16,
+    words: ['trifle', 'mousse', 'fudge', 'sorbet', 'toffee'],
+    note: 'Dessert first.' },
+  { id: 28, date: '2026-10-23', title: 'Wild West', level: 'Expert', layout: 'stairs28', target: 0.05,
+    words: ['sheriff', 'cowboy', 'canyon', 'howdy', 'jail'],
+    note: 'This town isn’t big enough for all of them.' },
+  // ---- Saturday, October 24 ----
+  { id: 29, date: '2026-10-24', title: 'Garden Path', level: 'Easy', layout: 'row17', target: 0.45,
+    words: ['stone', 'moss', 'fern', 'rose'],
+    note: 'A slow walk to the gate.' },
+  { id: 30, date: '2026-10-24', title: 'Safe Harbor', level: 'Medium', layout: 'spool25', target: 0.3,
+    words: ['anchor', 'sailor', 'dock', 'ferry', 'buoy'],
+    note: 'Tied up for the night.' },
+  { id: 31, date: '2026-10-24', title: 'Well Heeled', level: 'Hard', layout: 'rack27', target: 0.16,
+    words: ['sneaker', 'loafer', 'sandal', 'clog', 'boot'],
+    note: 'Five pairs by the door.' },
+  { id: 32, date: '2026-10-24', title: 'Haunted House', level: 'Expert', layout: 'manor32', target: 0.05,
+    words: ['ghost', 'crypt', 'coffin', 'attic', 'creak', 'spider'],
+    note: 'Nobody has lived here for years.' },
+  // ---- Sunday, October 25 ----
+  { id: 33, date: '2026-10-25', title: 'Trick or Treat', level: 'Easy', layout: 'lamp20', target: 0.45,
+    words: ['candy', 'costume', 'mask', 'cape'],
+    note: 'A dress rehearsal for next Saturday.' },
+  { id: 34, date: '2026-10-25', title: 'Pantry Staples', level: 'Medium', layout: 'shelf24', target: 0.3,
+    words: ['flour', 'honey', 'rice', 'beans', 'pasta'],
+    note: 'Stocked for the week ahead.' },
+  { id: 35, date: '2026-10-25', title: 'Pizza Night', level: 'Hard', layout: 'slice25', target: 0.16,
+    words: ['crust', 'basil', 'olive', 'sauce', 'pizza'],
+    note: 'Two Z’s, no anchovies.' },
+  { id: 36, date: '2026-10-25', title: 'Toy Chest', level: 'Expert', layout: 'toys30', target: 0.05,
+    words: ['puzzle', 'kite', 'robot', 'doll', 'blocks', 'teddy'],
+    note: 'Everything back in the box before bed.' },
 ];

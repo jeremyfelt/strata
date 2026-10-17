@@ -3,6 +3,7 @@
 //  - the solver agrees the starting board can be cleared
 //  - random play that strands itself always gets correct undo advice from Check
 //  - index.html carries the same puzzles as src/puzzles.json
+//  - the schedule has one puzzle per level on every day, with no gaps
 const fs = require('fs');
 const Core = require('../src/core.js');
 const P = JSON.parse(fs.readFileSync('src/puzzles.json', 'utf8'));
@@ -14,6 +15,24 @@ const m = html.match(/var PUZZLES = (\[[\s\S]*?\n\]);/);
 if (!m || JSON.stringify(JSON.parse(m[1])) !== JSON.stringify(P)) {
   fails++; console.log('FAIL index.html is out of date. Run: python3 tools/build.py');
 }
+
+// schedule: every date has exactly one puzzle at each level
+const LEVELS = ['Easy', 'Medium', 'Hard', 'Expert'];
+const byDate = {};
+for (const p of P) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(p.date || '')) { fails++; console.log(`FAIL #${p.id} ${p.title} has no valid date`); continue; }
+  if (!LEVELS.includes(p.level)) { fails++; console.log(`FAIL #${p.id} ${p.title} has unknown level ${p.level}`); }
+  (byDate[p.date] = byDate[p.date] || []).push(p.level);
+}
+const dates = Object.keys(byDate).sort();
+for (const d of dates) {
+  const got = byDate[d].slice().sort((a, b) => LEVELS.indexOf(a) - LEVELS.indexOf(b)).join(',');
+  if (got !== LEVELS.join(',')) { fails++; console.log(`FAIL ${d} has ${got}, expected one of each level`); }
+}
+const day = 86400000, t0 = Date.parse(dates[0]), t1 = Date.parse(dates[dates.length - 1]);
+const span = Math.round((t1 - t0) / day) + 1;
+if (span !== dates.length) { fails++; console.log(`FAIL schedule has gaps: ${dates.length} dates across ${span} days`); }
+console.log(`Schedule: ${dates.length} days, ${dates[0]} through ${dates[dates.length - 1]}, ${P.length} puzzles`);
 
 const ids = new Set();
 for (const p of P) {
@@ -55,7 +74,7 @@ for (const p of P) {
   }
   const pass = ok && start.status === 'clear' && recovered === deadEnds;
   if (!pass) fails++;
-  console.log(`${pass ? 'PASS' : 'FAIL'} #${p.id} ${p.title.padEnd(14)} theme path ${ok ? 'ok' : 'BROKEN'}, start ${start.status}, ${recovered}/${deadEnds} dead ends recovered, slowest check ${worst}ms`);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${p.date} ${p.level.padEnd(6)} #${String(p.id).padEnd(2)} ${p.title.padEnd(15)} theme path ${ok ? 'ok' : 'BROKEN'}, start ${start.status}, ${recovered}/${deadEnds} dead ends recovered, slowest check ${worst}ms`);
 }
 console.log(fails ? `${fails} problem(s)` : 'All puzzles pass.');
 process.exit(fails ? 1 : 0);

@@ -124,6 +124,13 @@ function buildPuzzle(spec, opts = {}) {
   const letters = words.join('');
   const lex = Core.puzzleLexicon(DICT, letters);
   for (const w of words) if (!lex.words.has(w)) throw new Error('not in dictionary: ' + w);
+  // Theme words count as common (the shipped dictionary marks them so too), so the
+  // simulated players and Reveal can use them even when they are rare in everyday text.
+  for (const w of words) {
+    const sig = Core.sortLetters(w), e = lex.sigs.get(sig);
+    e.common = true; e.word = w;
+    for (let k = 1; k <= sig.length; k++) lex.commonPrefixes.add(sig.slice(0, k));
+  }
   const r = rng(opts.seed || 1);
   const cands = [];
   for (let attempt = 0; attempt < (opts.attempts || 30); attempt++) {

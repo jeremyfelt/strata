@@ -104,32 +104,45 @@ h1, h2, h3, p { margin: 0; }
 .mark i:nth-child(4) { background: var(--lv3); width: 80%; margin-left: 12%; }
 .masthead h1 { font: 800 38px/1 var(--font); font-stretch: 125%; letter-spacing: -.02em; }
 .dek { font-size: 17px; line-height: 1.45; color: var(--slate-soft); max-width: 30em; text-wrap: pretty; }
-.core { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--slate-soft); font-variant-numeric: tabular-nums; }
-.core-cells { display: flex; gap: 4px; }
-.core-cells b { width: 14px; height: 16px; border-radius: 3px; background: var(--locked); border: 1px solid var(--line); }
-.core-cells b.on { background: var(--c); border-color: transparent; }
-#list { display: flex; flex-direction: column; gap: 30px; }
-.group { display: flex; flex-direction: column; gap: 4px; }
-.group-head { display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 10px; padding-bottom: 6px; }
-.group-head .band { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--lv); margin-bottom: 12px; }
-.group-head h2 { font: 700 17px/1.2 var(--font); font-stretch: 112%; }
-.group-head p { font-size: 13px; color: var(--slate-soft); }
-.group ul { list-style: none; margin: 0; padding: 0; }
+#list { display: flex; flex-direction: column; gap: 34px; }
+#list ul { list-style: none; margin: 0; padding: 0; }
+.day-head { display: grid; grid-template-columns: 1fr auto; align-items: end; column-gap: 12px; padding-bottom: 8px; }
+.day-head h2 { font: 800 28px/1.05 var(--font); font-stretch: 120%; letter-spacing: -.015em; }
+.day-date { grid-column: 1; margin-top: 5px; font-size: 15px; color: var(--slate-soft); }
+.day-head .tally { grid-column: 2; grid-row: 1 / span 2; align-self: end; padding-bottom: 2px; }
+.tally { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tally-cells { display: inline-flex; gap: 3px; }
+.tally-cells b { width: 11px; height: 13px; border-radius: 3px; background: var(--locked); border: 1px solid var(--line); }
+.tally-cells b.on { background: var(--c); border-color: transparent; }
+.empty-day { padding: 16px; border-radius: 14px; background: var(--stone-deep); color: var(--slate-soft); }
+.earlier { display: flex; flex-direction: column; }
+.earlier > h2 { font: 700 17px/1.2 var(--font); font-stretch: 112%; padding-bottom: 8px; }
+.past { border-top: 1px solid var(--line); }
+.past:last-child { border-bottom: 1px solid var(--line); }
+.past > summary { list-style: none; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px; padding: 14px 2px; cursor: pointer; border-radius: 10px; }
+.past > summary::-webkit-details-marker { display: none; }
+.past > summary:focus-visible { outline: 2px solid var(--slate); outline-offset: 2px; }
+.past > summary:active { background: var(--stone-deep); }
+.sum-date { font-size: 16px; font-weight: 650; }
+.sum-chev { width: 18px; height: 18px; color: var(--slate-faint); transition: transform .2s ease; }
+.past[open] .sum-chev { transform: rotate(90deg); }
+.past ul { padding-bottom: 10px; }
 .pz { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 10px 2px; text-align: left; border-radius: 12px; }
 .pz:active { background: var(--stone-deep); }
 .chip {
-  width: 34px; height: 36px; display: grid; place-items: center; border-radius: 7px;
-  background: var(--bone); border: 1px solid var(--line); box-shadow: 0 1.5px 0 0 var(--bone-shade), 0 4px 0 0 var(--lv);
-  font: 700 15px/1 var(--font); font-stretch: 110%; font-variant-numeric: tabular-nums; margin-bottom: 3px;
+  width: 34px; height: 36px; display: grid; place-items: center; border-radius: 7px; color: var(--slate);
+  background: var(--bone); border: 1px solid var(--line); box-shadow: 0 1.5px 0 0 var(--bone-shade), 0 4px 0 0 var(--lv); margin-bottom: 3px;
 }
+.chip svg { width: 18px; height: 18px; }
+.bars { display: grid; gap: 2px; }
+.bars i { display: block; width: 14px; height: 3px; border-radius: 2px; background: var(--lv); }
 .pz.solved .chip { background: var(--found); border-color: var(--found); color: var(--bone); }
 .pz-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .pz-title { font: 700 18px/1.2 var(--font); }
 .pz-sub { font-size: 13px; color: var(--slate-soft); font-variant-numeric: tabular-nums; }
 .pz-end { color: var(--slate-faint); display: grid; place-items: center; }
 .pz-end svg { width: 18px; height: 18px; }
-.pz.solved .pz-end { color: var(--found); }
-.pz.solved .pz-end svg { width: 22px; height: 22px; }
+.day-done { color: var(--slate) !important; }
 .colophon { font-size: 13px; color: var(--slate-faint); max-width: 32em; }
 
 /* ---------- game ---------- */
@@ -303,9 +316,8 @@ h1, h2, h3, p { margin: 0; }
         <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <h1 id="home-title">Strata</h1>
       </header>
-      <p class="dek">Word puzzles in layers. Spell with the tiles you can reach, and dig down until the board is clear.</p>
+      <p class="dek">Word puzzles in layers. Spell with the tiles you can reach, and dig down until the board is clear. Four new puzzles every day, from easy to expert.</p>
       <div><button class="key small" id="home-help" type="button">How to play</button></div>
-      <div class="core" id="progress"></div>
       <div id="list"></div>
       <p class="colophon">Every board is built around a handful of theme words and checked to be clearable. Your progress saves on this device.</p>
     </div>
@@ -378,12 +390,7 @@ var PUZZLES = %%PUZZLES%%;
 (function () {
   'use strict';
   var Core = window.StrataCore;
-  var LEVELS = [
-    { name: 'Easy', blurb: 'Short stacks and friendly letters.' },
-    { name: 'Medium', blurb: 'Taller stacks. Watch your vowels.' },
-    { name: 'Hard', blurb: 'Awkward letters, buried vowels.' },
-    { name: 'Expert', blurb: 'Q, Z and very little room to spare.' }
-  ];
+  var LEVELS = ['Easy', 'Medium', 'Hard', 'Expert'];
   var $ = function (id) { return document.getElementById(id); };
   var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var ICON = {
@@ -400,10 +407,7 @@ var PUZZLES = %%PUZZLES%%;
     p.tiles = p.tiles.map(function (t) { return { x: t[0], y: t[1], z: t[2], l: String(t[3]).toLowerCase() }; });
     p.words = p.words.map(function (w) { return w.toLowerCase(); });
   });
-  function levelIndex(p) {
-    for (var k = 0; k < LEVELS.length; k++) if (LEVELS[k].name === p.level) return k;
-    return 0;
-  }
+  function levelIndex(p) { return Math.max(0, LEVELS.indexOf(p.level)); }
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function fmt(s) {
@@ -449,40 +453,85 @@ var PUZZLES = %%PUZZLES%%;
     $('game').hidden = name !== 'game';
   }
 
+  /* ---------- the daily schedule ---------- */
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function isoOf(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function dateOf(iso) { var p = iso.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function addDays(iso, n) { var d = dateOf(iso); d.setDate(d.getDate() + n); return isoOf(d); }
+  /* Today on this device. Adding #YYYY-MM-DD to the address previews another day. */
+  function todayISO() {
+    var h = (location.hash || '').slice(1);
+    return /^\d{4}-\d{2}-\d{2}$/.test(h) ? h : isoOf(new Date());
+  }
+  function longDate(iso) { return dateOf(iso).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }); }
+  function dayWord(iso) {
+    var t = todayISO();
+    if (iso === t) return 'today';
+    if (iso === addDays(t, -1)) return 'yesterday';
+    return dateOf(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+  var DAYS = {};
+  PUZZLES.forEach(function (p) { (DAYS[p.date] = DAYS[p.date] || []).push(p); });
+  Object.keys(DAYS).forEach(function (d) { DAYS[d].sort(function (a, b) { return levelIndex(a) - levelIndex(b); }); });
+  function solvedP(p) { return !!(store.p[p.id] && store.p[p.id].best); }
+  function nextInDay(P) {
+    var day = DAYS[P.date] || [], i = day.indexOf(P);
+    var order = day.slice(i + 1).concat(day.slice(0, i));
+    for (var k = 0; k < order.length; k++) if (!solvedP(order[k])) return order[k];
+    return null;
+  }
+
   /* ---------- home ---------- */
+  var openDays = {};
+  function tally(list) {
+    var n = 0, cells = '';
+    list.forEach(function (p) {
+      var s = solvedP(p);
+      if (s) n++;
+      cells += '<b class="' + (s ? 'on' : '') + '" style="--c: var(--lv' + levelIndex(p) + ')"></b>';
+    });
+    return '<span class="tally"><span class="tally-cells" aria-hidden="true">' + cells + '</span><span>' + n + ' of ' + list.length + ' cleared</span></span>';
+  }
+  function row(p) {
+    var r = store.p[p.id] || {}, li = levelIndex(p), par = p.words.length, cls = '', chip, sub;
+    if (r.best) {
+      cls = 'solved';
+      chip = ICON.check;
+      sub = p.level + ', cleared in ' + fmt(r.best.time) + ', ' + parPhrase(r.best.words, par);
+    } else {
+      chip = '<span class="bars" aria-hidden="true">' + new Array(li + 2).join('<i></i>') + '</span>';
+      sub = ((r.moves && r.moves.length) || r.time) ? p.level + ', in progress' : p.level + ', ' + p.tiles.length + ' tiles, par ' + par;
+    }
+    return '<li><button class="pz ' + cls + '" type="button" data-id="' + p.id + '" style="--lv: var(--lv' + li + ')">' +
+      '<span class="chip">' + chip + '</span><span class="pz-text"><span class="pz-title">' + esc(p.title) + '</span>' +
+      '<span class="pz-sub">' + sub + '</span></span><span class="pz-end">' + ICON.chev + '</span></button></li>';
+  }
   function renderHome() {
-    var solved = 0, cells = '';
-    PUZZLES.forEach(function (p) {
-      var done = store.p[p.id] && store.p[p.id].best;
-      if (done) solved++;
-      cells += '<b class="' + (done ? 'on' : '') + '" style="--c: var(--lv' + levelIndex(p) + ')"></b>';
-    });
-    $('progress').innerHTML = '<span class="core-cells" aria-hidden="true">' + cells + '</span><span>' + solved + ' of ' + PUZZLES.length + ' cleared</span>';
-    var html = '';
-    LEVELS.forEach(function (lv, li) {
-      var ps = PUZZLES.filter(function (p) { return p.level === lv.name; });
-      if (!ps.length) return;
-      html += '<section class="group" style="--lv: var(--lv' + li + ')"><div class="group-head"><span class="band" aria-hidden="true"></span><h2>' + lv.name + '</h2><p>' + esc(lv.blurb) + '</p></div><ul>';
-      ps.forEach(function (p) {
-        var r = store.p[p.id] || {}, cls = '', sub, end = ICON.chev, par = p.words.length;
-        var inProgress = (r.moves && r.moves.length) || r.time;
-        if (r.best) {
-          cls = 'solved';
-          end = ICON.check;
-          sub = 'Cleared in ' + fmt(r.best.time) + ', ' + parPhrase(r.best.words, par);
-        } else if (inProgress) {
-          sub = 'In progress, ' + plural((r.moves || []).length, 'word') + ' played';
-        } else {
-          sub = p.tiles.length + ' tiles, par ' + par;
-        }
-        html += '<li><button class="pz ' + cls + '" type="button" data-id="' + p.id + '"><span class="chip">' + p.id + '</span>' +
-          '<span class="pz-text"><span class="pz-title">' + esc(p.title) + '</span><span class="pz-sub">' + sub + '</span></span>' +
-          '<span class="pz-end">' + end + '</span></button></li>';
+    var today = todayISO(), dates = Object.keys(DAYS).sort(), list = DAYS[today];
+    var past = dates.filter(function (d) { return d < today; }).reverse();
+    var html = '<section class="day" aria-labelledby="today-h"><div class="day-head"><h2 id="today-h">Today</h2>' +
+      '<p class="day-date">' + longDate(today) + '</p>' + (list ? tally(list) : '') + '</div>';
+    if (list) html += '<ul>' + list.map(row).join('') + '</ul>';
+    else if (past.length) html += '<p class="empty-day">Today’s puzzles aren’t ready yet. The most recent set is below.</p>';
+    else if (dates.length) html += '<p class="empty-day">The first puzzles arrive ' + longDate(dates[0]) + '.</p>';
+    html += '</section>';
+    if (past.length) {
+      html += '<section class="earlier" aria-labelledby="earlier-h"><h2 id="earlier-h">Earlier</h2>';
+      past.forEach(function (d, i) {
+        var open = d in openDays ? openDays[d] : (!list && i === 0);
+        html += '<details class="past" data-date="' + d + '"' + (open ? ' open' : '') + '><summary><span class="sum-date">' + longDate(d) + '</span>' +
+          tally(DAYS[d]) + '<svg class="sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>' +
+          '<ul>' + DAYS[d].map(row).join('') + '</ul></details>';
       });
-      html += '</ul></section>';
-    });
+      html += '</section>';
+    }
     $('list').innerHTML = html;
   }
+  $('list').addEventListener('toggle', function (e) {
+    var d = e.target && e.target.dataset ? e.target.dataset.date : null;
+    if (d) openDays[d] = e.target.open;
+  }, true);
+  window.addEventListener('hashchange', function () { if (screen === 'home') renderHome(); });
   $('list').addEventListener('click', function (e) {
     var b = e.target.closest('.pz');
     if (b) openPuzzle(+b.dataset.id);
@@ -514,7 +563,7 @@ var PUZZLES = %%PUZZLES%%;
     show('game');
     var li = levelIndex(P);
     $('g-title').textContent = P.title;
-    $('g-sub').textContent = P.level + ', puzzle ' + P.id + ' of ' + PUZZLES.length;
+    $('g-sub').textContent = P.level + ', ' + dayWord(P.date);
     $('g-swatch').style.setProperty('--lv', 'var(--lv' + li + ')');
     $('paused').hidden = true;
     buildBoard();
@@ -766,7 +815,8 @@ var PUZZLES = %%PUZZLES%%;
   $('timer').addEventListener('click', function () { if (G) setPaused(!G.paused); });
   $('resume').addEventListener('click', function () { setPaused(false); });
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) { stopTimer(); persist(); } else startTimer();
+    if (document.hidden) { stopTimer(); persist(); }
+    else { startTimer(); if (screen === 'home') renderHome(); }
   });
   window.addEventListener('pagehide', function () { persist(); });
 
@@ -959,9 +1009,9 @@ var PUZZLES = %%PUZZLES%%;
     if (act === 'restart') { closeSheet(true); restartPuzzle(); return; }
     if (act === 'again') { var id = G.P.id; closeSheet(true, true); openPuzzle(id, { replay: true }); return; }
     if (act === 'next') {
-      var nid = G.P.id + 1;
+      var nx = nextInDay(G.P);
       closeSheet(true, true);
-      if (PUZZLES.some(function (p) { return p.id === nid; })) openPuzzle(nid); else goHome();
+      if (nx) openPuzzle(nx.id); else goHome();
       return;
     }
     if (act.indexOf('undo-') === 0) { closeSheet(true); undo(+act.slice(5)); startTimer(); return; }
@@ -1022,6 +1072,7 @@ var PUZZLES = %%PUZZLES%%;
       '<p><b>A tile is free</b> when nothing sits on top of it and its left or right side is open. Played tiles leave the board, which frees their neighbors and turns over the tiles beneath. Each layer stands on its own color, so you can tell how deep a stack goes.</p>' +
       '<p><b>Clear every tile to solve.</b> The title hints at a theme. The theme words use every tile exactly once, so finding them all puts you at par.</p>' +
       '<p><b>Not every path works.</b> Leftover letters can strand you. Undo as often as you like, and Check tells you whether the board can still be cleared.</p>' +
+      '<p><b>Four new puzzles every day,</b> one at each level from Easy to Expert. Earlier days stay playable.</p>' +
       '</div>' +
       '<div class="actions"><button class="key dark" type="button" data-act="close">' + (screen === 'game' ? 'Back to the puzzle' : 'Got it') + '</button></div>'
     );
@@ -1036,7 +1087,11 @@ var PUZZLES = %%PUZZLES%%;
       var got = found.indexOf(w) >= 0;
       return '<span class="' + (got ? 'found' : 'missed') + '">' + (got ? ICON.check : '') + esc(w) + '</span>';
     }).join('');
-    var hasNext = PUZZLES.some(function (p) { return p.id === G.P.id + 1; });
+    var nx = nextInDay(G.P), hasNext = !!nx;
+    var dayDone = !hasNext && (DAYS[G.P.date] || []).every(solvedP);
+    var doneLine = dayDone ? '<p class="day-done">' + (G.P.date === todayISO()
+      ? 'That’s all four for today. Come back tomorrow for a new set.'
+      : 'That’s all four for ' + longDate(G.P.date) + '.') + '</p>' : '';
     var best = review && r.best && (r.best.words !== d.words || r.best.time !== d.time)
       ? '<p>Your best is ' + fmt(r.best.time) + ' with ' + plural(r.best.words, 'word') + '.</p>' : '';
     var title = (review ? 'You cleared ' + esc(G.P.title) + ' in ' : 'Cleared in ') + fmt(d.time);
@@ -1045,9 +1100,9 @@ var PUZZLES = %%PUZZLES%%;
       '<p class="verdict">' + verdict + '</p>' + best +
       '<div class="block"><h3 class="sub">Theme words, ' + found.length + ' of ' + par + '</h3><div class="theme-list">' + chips + '</div></div>' +
       (d.list && d.list.length ? '<p class="path">Your words: ' + d.list.map(esc).join(', ') + '</p>' : '') +
-      '<p class="note">' + esc(G.P.note) + '</p>' +
+      '<p class="note">' + esc(G.P.note) + '</p>' + doneLine +
       '<div class="actions">' +
-        (hasNext ? '<button class="key dark" type="button" data-act="next">Next puzzle</button>' : '') +
+        (hasNext ? '<button class="key dark" type="button" data-act="next">Next: ' + esc(nx.level) + ', ' + esc(nx.title) + '</button>' : '') +
         '<button class="key' + (hasNext ? '' : ' dark') + '" type="button" data-act="home">All puzzles</button>' +
         '<button class="link-btn" type="button" data-act="again">Play again</button>' +
       '</div>',
