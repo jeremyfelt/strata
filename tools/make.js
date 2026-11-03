@@ -33,7 +33,12 @@ const ok = res.cands.filter(c => verify(c.tiles, c.solution) && c.ev.themed >= c
 if (!ok.length) { console.error(`#${id}: no valid placement found. Try more attempts or a different layout.`); process.exitCode = 1; return; }
 const score = c => Math.abs(c.ev.careful - spec.target) - 0.12 * c.ev.themed;
 ok.sort((a, b) => score(a) - score(b));
-const best = ok[0];
+// Each first-pass score comes from a few hundred simulated games, so the luckiest placement tends
+// to look closer to the target than it is. Re-measure the leaders with more games before choosing.
+const finalists = ok.slice(0, 6);
+finalists.forEach((c, k) => { c.ev = C.evaluate(c.tiles, res.lex, spec.words.length, 500, 500 + k, false, res.words); });
+const valid = finalists.filter(c => c.ev.themed >= c.ev.careful);
+const best = (valid.length ? valid : finalists).sort((a, b) => score(a) - score(b))[0];
 
 // deeper stats for the chosen one
 const deep = C.evaluate(best.tiles, res.lex, spec.words.length, 600, 99, true, res.words);

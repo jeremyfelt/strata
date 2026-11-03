@@ -33,6 +33,10 @@ const day = 86400000, t0 = Date.parse(dates[0]), t1 = Date.parse(dates[dates.len
 const span = Math.round((t1 - t0) / day) + 1;
 if (span !== dates.length) { fails++; console.log(`FAIL schedule has gaps: ${dates.length} dates across ${span} days`); }
 console.log(`Schedule: ${dates.length} days, ${dates[0]} through ${dates[dates.length - 1]}, ${P.length} puzzles`);
+// runway: how many days of puzzles are left after today (local date), so a running-out schedule is visible
+const now = new Date(), today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+const left = Math.round((t1 - Date.parse(today)) / day);
+console.log(left >= 0 ? `Runway: ${left} day${left === 1 ? '' : 's'} of puzzles after today (${today})` : `WARNING: the schedule ended ${-left} day(s) ago (${today}). Add more days.`);
 
 const ids = new Set();
 for (const p of P) {

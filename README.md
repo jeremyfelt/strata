@@ -21,7 +21,7 @@ Progress, times and best results are saved in the browser on each device. The da
 
 Every puzzle in `src/puzzles.json` has a `date` and a `level`, and each date has exactly one puzzle per level. [SCHEDULE.md](SCHEDULE.md) lists the lineup by day (titles only, no answers); `tools/build.py` regenerates it.
 
-To preview a day before it goes live, add it to the address: `https://strata.jeremyfelt.com/#2026-10-25`.
+To preview a day before it goes live, add it to the address: `https://strata.jeremyfelt.com/#2026-11-15`.
 
 Boards are edited, not randomly generated. Each one starts from a hand-picked theme, its theme words and a hand-drawn layout. A construction tool places the words on the layout so that playing them in order clears the board, tries many placements, and keeps the one closest to a difficulty target for its level. Difficulty is measured with simulated players: one plays any common word while keeping a sensible share of vowels, the other also looks for theme words. The targets, as the share of games the theme-blind player clears:
 
@@ -37,10 +37,10 @@ Every published board is checked by a solver: the theme path is legal, the start
 ## Adding a day
 
 1. Add four specs to `tools/specs.js`, one per level, with the next ids and the new date: title (the clue), layout, target, theme words and a one-line note. The theme words' letters must add up to the layout's tile count. `node tools/viz.js` lists every layout with its tile count; new shapes go in `tools/layouts.js`.
-2. `node tools/make.js <id> <id> <id> <id>` places the words, measures difficulty, prints each board and writes `out/puzzle-<id>.json`. If a board lands far from its target, try another layout or swap a word and run it again.
+2. `node tools/make.js <id> <id> <id> <id>` places the words, measures difficulty, prints each board and writes `out/puzzle-<id>.json`. If a board lands far from its target, `node tools/retune.js <id>` tries every board shape with the same tile count and shows which come closest; set that layout in the spec (or swap a word) and run make.js again.
 3. `node tools/add_puzzle.js <id> <id> <id> <id>` adds them to `src/puzzles.json`.
 4. `python3 tools/build_dict.py` so Reveal can suggest the new theme words, then `python3 tools/build.py`.
-5. Run the tests and commit. GitHub Pages publishes the new `index.html`.
+5. Run the tests and commit. GitHub Pages publishes the new `index.html`. `tools/test_logic.js` reports how many days of puzzles are left, so it's easy to see when the schedule needs topping up.
 
 In `src/puzzles.json`, `tiles` are `[x, y, z, letter]` in half-tile units (a tile covers 2×2 units, so an odd offset sits across two tiles below it; `z` is the layer, 0 is the table). `words` are the theme words in a playable order and `solution` lists the tile indexes each one uses.
 
